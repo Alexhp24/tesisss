@@ -1,37 +1,43 @@
 const express = require("express");
-const { MongoClient } = require("mongodb");
+const mongoose = require("mongoose");
+const cors = require("cors");
+
 const app = express();
 app.use(express.json());
+app.use(cors());
 
-// 🔗 Conexión a MongoDB Atlas
-const uri = "mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/?retryWrites=true&w=majority&appName=fieldsmart01";
-const dbName = "prueba";
-const collectionName = "lecturas";
+// 📡 Conexión a MongoDB Atlas
+mongoose
+  .connect("mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/?retryWrites=true&w=majority&appName=fieldsmart01", { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("✅ Conectado a MongoDB"))
+  .catch(err => console.log("❌ Error MongoDB:", err));
 
-let collection;
+// 📦 Schema
+const DatoSchema = new mongoose.Schema({
+  temperatura: Number,
+  estado: String,
+  fecha: { type: Date, default: Date.now }
+});
 
-async function conectarDB() {
-  const client = new MongoClient(uri);
-  await client.connect();
-  console.log("✅ Conectado a MongoDB Atlas");
-  const db = client.db(dbName);
-  collection = db.collection(collectionName);
-}
+const Dato = mongoose.model("Dato", DatoSchema);
 
-conectarDB();
-
-// 📥 Endpoint para recibir datos desde el ESP
+// 📥 Endpoint para recibir datos del ESP
 app.post("/api/datos", async (req, res) => {
   try {
-    const dato = req.body;
-    dato.fecha = new Date();
-    await collection.insertOne(dato);
-    console.log("✅ Dato recibido y guardado:", dato);
-    res.status(200).send({ ok: true });
-  } catch (err) {
-    console.error(err);
-    res.status(500).send({ error: "Error al guardar" });
+    const nuevo = new Dato(req.body);
+    await nuevo.save();
+    res.status(201).send("✅ Dato guardado correctamente");
+  } catch (e) {
+    res.status(500).send("❌ Error al guardar dato");
   }
 });
 
-app.listen(3000, () => console.log("🚀 Servidor corriendo en http://localhost:3000"));
+// 📤 Ver datos guardados
+app.get("/api/datos", async (req, res) => {
+  const datos = await Dato.find().sort({ fecha: -1 });
+  res.json(datos);
+});
+
+// 🚀 Iniciar servidor
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`🌐 Servidor funcionando en puerto ${PORT}`));
