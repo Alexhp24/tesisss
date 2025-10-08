@@ -6,13 +6,13 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ✅ Conexión a MongoDB Atlas
+// Conexión a MongoDB Atlas
 mongoose
   .connect("mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/sistemaRiego?retryWrites=true&w=majority")
   .then(() => console.log("✅ Conectado a MongoDB Atlas"))
   .catch(err => console.error("❌ Error al conectar con MongoDB:", err));
 
-// ✅ Esquemas
+
 const dataSchema = new mongoose.Schema({
   temperatura: Number,
   humedad: Number,
@@ -24,7 +24,7 @@ const dataSchema = new mongoose.Schema({
 const Historial = mongoose.model("Historial", dataSchema);
 const Sensor = mongoose.model("Sensor", dataSchema);
 
-// ✅ Endpoint para recibir datos
+//  Endpoint para recibir datos
 app.post("/api/datos", async (req, res) => {
   try {
     console.log("📩 Dato recibido:", req.body);
@@ -44,7 +44,7 @@ app.post("/api/datos", async (req, res) => {
   }
 });
 
-// ✅ Endpoint para ver todos los datos
+//  Endpoint para ver todos los datos
 app.get("/api/historial", async (req, res) => {
   try {
     const datos = await Historial.find().sort({ fecha: -1 });
@@ -54,7 +54,7 @@ app.get("/api/historial", async (req, res) => {
   }
 });
 
-// ✅ Endpoint para ver último dato
+//  Endpoint para ver último dato
 app.get("/api/sensor", async (req, res) => {
   try {
     const sensor = await Sensor.findOne();
@@ -64,11 +64,11 @@ app.get("/api/sensor", async (req, res) => {
   }
 });
 
-// ✅ Endpoint raíz para prueba
+
 app.get("/", (req, res) => {
   res.send("🚀 Servidor de sistema de riego activo en Render");
 });
 
-// ✅ Iniciar servidor
+// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🌐 Servidor corriendo en puerto ${PORT}`));
