@@ -8,8 +8,7 @@ app.use(cors());
 
 // ✅ Conexión a MongoDB
 mongoose
-  .connect("mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/sistemaRiego?retryWrites=true&w=majority&appName=fieldsmart01", 
-    { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect("mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/sistemaRiego")
   .then(() => console.log("✅ Conectado a MongoDB"))
   .catch(err => console.log("❌ Error MongoDB:", err));
 
@@ -38,6 +37,8 @@ const Sensor = mongoose.model("sensor", SensorSchema);
 // ✅ Endpoint para recibir datos del ESP
 app.post("/api/datos", async (req, res) => {
   try {
+    console.log("📩 Dato recibido:", req.body); // 👈 Esto mostrará los datos en los logs de Render
+
     // Guardar en historial
     const nuevoHistorial = new Historial(req.body);
     await nuevoHistorial.save();
@@ -45,9 +46,11 @@ app.post("/api/datos", async (req, res) => {
     // Actualizar (o crear) último sensor
     await Sensor.findOneAndUpdate({}, req.body, { upsert: true, new: true });
 
+    console.log("✅ Dato guardado correctamente en MongoDB"); // 👈 Confirmación adicional
+
     res.status(201).send("✅ Dato guardado correctamente");
   } catch (e) {
-    console.log(e);
+    console.log("❌ Error al guardar dato:", e);
     res.status(500).send("❌ Error al guardar dato");
   }
 });
@@ -62,6 +65,11 @@ app.get("/api/historial", async (req, res) => {
 app.get("/api/sensor", async (req, res) => {
   const sensor = await Sensor.findOne();
   res.json(sensor);
+});
+
+// ✅ Endpoint raíz de prueba
+app.get("/", (req, res) => {
+  res.send("🚀 Servidor funcionando correctamente en Render");
 });
 
 // ✅ Iniciar servidor

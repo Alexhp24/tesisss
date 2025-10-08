@@ -29,3 +29,5 @@ npm init -y
 npm install mongodb
 
 -npm install express
+-npm install cors
+-npm install mongoose
