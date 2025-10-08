@@ -1,0 +1,31 @@
+CONFIGURACION CON RENDER
+PASO 01
+
+Subir a git tu proyecto
+
+PASO 02 
+- Usar web server de rende
+- New
+-Selecciona Web Service
+-Conectar con github
+-Seleccionar Repositorio
+-Name: (como quieras)
+-Environment: Node
+-Build Command: npm install
+-Start Command: node index.js
+
+PASO 03 INSTALAR LIBRERIAS
+-Crea una carpeta en tu PC, por ejemplo:
+
+mkdir prueba-mongo
+cd prueba-mongo
+
+-Inicializa el proyecto:
+
+npm init -y
+
+-Instala el paquete oficial de MongoDB:
+
+npm install mongodb
+
+-npm install express

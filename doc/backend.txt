@@ -6,24 +6,22 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// ✅ Conexión a MongoDB Atlas con nombre de base de datos personalizado
+//  Conexión a MongoDB Atlas
 mongoose
-  .connect("mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/sistemaRiego?retryWrites=true&w=majority&appName=fieldsmart01", 
-    { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect("mongodb+srv://fieldsmart25:Hidalgo0696@fieldsmart01.heru0rb.mongodb.net/?retryWrites=true&w=majority&appName=fieldsmart01", { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("✅ Conectado a MongoDB"))
   .catch(err => console.log("❌ Error MongoDB:", err));
 
-// ✅ Schema
+//  Schema
 const DatoSchema = new mongoose.Schema({
   temperatura: Number,
   estado: String,
   fecha: { type: Date, default: Date.now }
 });
 
-// ✅ Cambia el nombre de la colección aquí
-const Dato = mongoose.model("lecturas", DatoSchema);
+const Dato = mongoose.model("Dato", DatoSchema);
 
-// ✅ Endpoint para recibir datos del ESP
+//  Endpoint para recibir datos del ESP
 app.post("/api/datos", async (req, res) => {
   try {
     const nuevo = new Dato(req.body);
@@ -34,12 +32,12 @@ app.post("/api/datos", async (req, res) => {
   }
 });
 
-// ✅ Ver datos guardados
+// Ver datos guardados
 app.get("/api/datos", async (req, res) => { 
   const datos = await Dato.find().sort({ fecha: -1 });
   res.json(datos);
 });
 
-// ✅ Iniciar servidor
+// Iniciar servidor
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`🌐 Servidor funcionando en puerto ${PORT}`));
